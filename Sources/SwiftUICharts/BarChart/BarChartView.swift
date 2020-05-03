@@ -19,6 +19,7 @@ public struct BarChartView : View {
     public var dropShadow: Bool
     public var cornerImage: Image
     public var valueSpecifier:String
+    public var  ignoreFormSizeHeight:Bool
     
     @State private var touchLocation: CGFloat = -1.0
     @State private var showValue: Bool = false
@@ -33,13 +34,14 @@ public struct BarChartView : View {
     var isFullWidth:Bool {
         return self.formSize == ChartForm.large
     }
-    public init(data:ChartData, title: String, legend: String? = nil, style: ChartStyle = Styles.barChartStyleOrangeLight, form: CGSize? = ChartForm.medium, dropShadow: Bool? = true, cornerImage:Image? = Image(systemName: "waveform.path.ecg"), valueSpecifier: String? = "%.1f"){
+    public init(data:ChartData, title: String, legend: String? = nil, style: ChartStyle = Styles.barChartStyleOrangeLight, form: CGSize? = ChartForm.medium, ignoreFormSizeHeight: Bool = false, dropShadow: Bool? = true, cornerImage:Image? = Image(systemName: "waveform.path.ecg"), valueSpecifier: String? = "%.1f"){
         self.data = data
         self.title = title
         self.legend = legend
         self.style = style
         self.darkModeStyle = style.darkModeStyle != nil ? style.darkModeStyle! : Styles.barChartStyleOrangeDark
         self.formSize = form!
+        self.ignoreFormSizeHeight = ignoreFormSizeHeight
         self.dropShadow = dropShadow!
         self.cornerImage = cornerImage!
         self.valueSpecifier = valueSpecifier!
@@ -93,8 +95,8 @@ public struct BarChartView : View {
             }
         }.frame(minWidth:self.formSize.width,
                 maxWidth: self.isFullWidth ? .infinity : self.formSize.width,
-                minHeight:self.formSize.height,
-                maxHeight:self.formSize.height)
+                minHeight: self.ignoreFormSizeHeight ? nil :  self.formSize.height,
+                maxHeight: self.ignoreFormSizeHeight ? nil : self.formSize.height)
             .gesture(DragGesture()
                 .onChanged({ value in
                     self.touchLocation = value.location.x/self.formSize.width
