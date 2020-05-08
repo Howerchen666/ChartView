@@ -23,15 +23,16 @@ public struct LineView: View {
     @State private var closestPoint: CGPoint = .zero
     @State private var opacity:Double = 0
     @State private var currentDataNumber: Double = 0
+    @State private var currentLabel: String = ""
     @State private var hideHorizontalLines: Bool = false
     
-    public init(data: [Double],
+    public init(data: ChartData,
                 title: String? = nil,
                 legend: String? = nil,
                 style: ChartStyle = Styles.lineChartStyleOne,
                 valueSpecifier: String? = "%.1f") {
         
-        self.data = ChartData(points: data)
+        self.data = data
         self.title = title
         self.legend = legend
         self.style = style
@@ -60,7 +61,7 @@ public struct LineView: View {
                             .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.backgroundColor : self.style.backgroundColor)
                         if(self.showLegend){
                             Legend(data: self.data,
-                                   frame: .constant(reader.frame(in: .local)), hideHorizontalLines: self.$hideHorizontalLines)
+                                   frame: .constant(reader.frame(in: .local)), hideHorizontalLines: self.$hideHorizontalLines, specifier: self.valueSpecifier)
                                 .transition(.opacity)
                                 .animation(Animation.easeOut(duration: 1).delay(1))
                         }
@@ -83,7 +84,7 @@ public struct LineView: View {
                     }
                     .frame(width: geometry.frame(in: .local).size.width, height: 240)
                     .offset(x: 0, y: 40 )
-                    MagnifierRect(currentNumber: self.$currentDataNumber, valueSpecifier: self.valueSpecifier)
+                    MagnifierRect(currentNumber: self.$currentDataNumber, label: self.$currentLabel, valueSpecifier: self.valueSpecifier)
                         .opacity(self.opacity)
                         .offset(x: self.dragLocation.x - geometry.frame(in: .local).size.width/2, y: 36)
                 }
@@ -113,6 +114,7 @@ public struct LineView: View {
         let index:Int = Int(floor((toPoint.x-15)/stepWidth))
         if (index >= 0 && index < points.count){
             self.currentDataNumber = points[index]
+            self.currentLabel = self.data.points[index].0
             return CGPoint(x: CGFloat(index)*stepWidth, y: CGFloat(points[index])*stepHeight)
         }
         return .zero
@@ -120,8 +122,10 @@ public struct LineView: View {
 }
 
 struct LineView_Previews: PreviewProvider {
+    
     static var previews: some View {
-        LineView(data: [8,23,54,32,12,37,7,23,43], title: "Full chart", style: Styles.lineChartStyleOne)
+           let data = ChartData(values: [("8/1", 8), ("15/1", 23), ("22/1", 54), ("29/1", 32), ("5/2", 12),  ("12/2", 37), ("19/2", 7), ("26/2", 23) ])
+        return LineView(data: data, title: "Full chart", style: Styles.lineChartStyleOne)
     }
 }
 

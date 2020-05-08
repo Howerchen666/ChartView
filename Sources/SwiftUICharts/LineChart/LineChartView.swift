@@ -15,11 +15,11 @@ public struct LineChartView: View {
     public var legend: String?
     public var style: ChartStyle
     public var darkModeStyle: ChartStyle
-    
+
     public var formSize:CGSize
     public var dropShadow: Bool
     public var valueSpecifier:String
-    
+
     @State private var touchLocation:CGPoint = .zero
     @State private var showIndicatorDot: Bool = false
     @State private var currentValue: Double = 2 {
@@ -27,13 +27,15 @@ public struct LineChartView: View {
             if (oldValue != self.currentValue && showIndicatorDot) {
                 HapticFeedback.playSelection()
             }
-            
+
         }
     }
-    var frame = CGSize(width: 180, height: 120)
-    private var rateValue: Int?
-    
-    public init(data: [Double],
+    @State private var currentLabel: String = ""
+
+    var frame = CGSize.zero
+    private var rateValue: Int
+
+    public init(data: ChartData,
                 title: String,
                 legend: String? = nil,
                 style: ChartStyle = Styles.lineChartStyleOne,
@@ -41,9 +43,10 @@ public struct LineChartView: View {
                 rateValue: Int? = 14,
                 dropShadow: Bool? = true,
                 valueSpecifier: String? = "%.1f") {
-        
-        self.data = ChartData(points: data)
+
+        self.data = data
         self.title = title
+        self.frame = CGSize(width: form!.width, height: 120)
         self.legend = legend
         self.style = style
         self.darkModeStyle = style.darkModeStyle != nil ? style.darkModeStyle! : Styles.lineViewDarkMode
@@ -53,7 +56,7 @@ public struct LineChartView: View {
         self.valueSpecifier = valueSpecifier!
         self.rateValue = rateValue
     }
-    
+
     public var body: some View {
         ZStack(alignment: .center){
             RoundedRectangle(cornerRadius: 20)
@@ -73,7 +76,7 @@ public struct LineChartView: View {
                                 .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.legendTextColor :self.style.legendTextColor)
                         }
                         HStack {
-                            
+
                             if (self.rateValue ?? 0 != 0)
                             {
                                 if (self.rateValue ?? 0 >= 0){
@@ -91,9 +94,13 @@ public struct LineChartView: View {
                 }else{
                     HStack{
                         Spacer()
-                        Text("\(self.currentValue, specifier: self.valueSpecifier)")
-                            .font(.system(size: 41, weight: .bold, design: .default))
-                            .offset(x: 0, y: 30)
+                        VStack {
+                            Text("\(self.currentValue, specifier: self.valueSpecifier)")
+                                .font(.system(size: 41, weight: .bold, design: .default))
+                            Text(self.currentLabel)
+                                .font(.system(size: 32, weight: .regular, design: .default))
+                                .foregroundColor(.gray)
+                        }.offset(x: 0, y: 30).animation(.spring(response: 0.0, dampingFraction:0.2))
                         Spacer()
                     }
                     .transition(.scale)
@@ -124,15 +131,16 @@ public struct LineChartView: View {
             })
         ).animation(.default)
     }
-    
+
     @discardableResult func getClosestDataPoint(toPoint: CGPoint, width:CGFloat, height: CGFloat) -> CGPoint {
         let points = self.data.onlyPoints()
         let stepWidth: CGFloat = width / CGFloat(points.count-1)
         let stepHeight: CGFloat = height / CGFloat(points.max()! + points.min()!)
-        
+
         let index:Int = Int(round((toPoint.x)/stepWidth))
         if (index >= 0 && index < points.count){
             self.currentValue = points[index]
+            self.currentLabel = self.data.points[index].0
             return CGPoint(x: CGFloat(index)*stepWidth, y: CGFloat(points[index])*stepHeight)
         }
         return .zero
@@ -142,7 +150,8 @@ public struct LineChartView: View {
 struct WidgetView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            LineChartView(data: [8,23,54,32,12,37,7,23,43], title: "Line chart", legend: "Basic")
+
+            return LineChartView(data: ChartData(values: [("8/1", 8), ("15/1", 23), ("22/1", 54), ("29/1", 32), ("5/2", 12),  ("12/2", 37), ("19/2", 7), ("26/2", 23) ]), title: "Line chart", legend: "Basic")
                 .environment(\.colorScheme, .light)
         }
     }
