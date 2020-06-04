@@ -20,7 +20,7 @@ public struct BarChartView : View {
     public var cornerImage: Image
     public var valueSpecifier:String
     public var  ignoreFormSizeHeight:Bool
-    
+
     @State private var touchLocation: CGFloat = -1.0
     @State private var showValue: Bool = false
     @State private var showLabelValue: Bool = false
@@ -46,7 +46,7 @@ public struct BarChartView : View {
         self.cornerImage = cornerImage!
         self.valueSpecifier = valueSpecifier!
     }
-    
+
     public var body: some View {
         ZStack{
             Rectangle()
@@ -60,7 +60,7 @@ public struct BarChartView : View {
                             .font(.headline)
                             .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.textColor : self.style.textColor)
                     }else{
-                        Text("\(self.currentValue, specifier: self.valueSpecifier)")
+                        Text("\(self.currentValue, specifier: self.valueSpecifier) ml")
                             .font(.headline)
                             .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.textColor : self.style.textColor)
                     }
@@ -91,7 +91,7 @@ public struct BarChartView : View {
                         .offset(x: self.getLabelViewOffset(touchLocation: self.touchLocation), y: -6)
                         .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.legendTextColor : self.style.legendTextColor)
                 }
-                
+
             }
         }.frame(minWidth:self.formSize.width,
                 maxWidth: self.isFullWidth ? .infinity : self.formSize.width,
@@ -115,7 +115,7 @@ public struct BarChartView : View {
             .gesture(TapGesture()
         )
     }
-    
+
     func getArrowOffset(touchLocation:CGFloat) -> Binding<CGFloat> {
         let realLoc = (self.touchLocation * self.formSize.width) - 50
         if realLoc < 10 {
@@ -126,11 +126,11 @@ public struct BarChartView : View {
             return .constant(0)
         }
     }
-    
+
     func getLabelViewOffset(touchLocation:CGFloat) -> CGFloat {
         return min(self.formSize.width-110,max(10,(self.touchLocation * self.formSize.width) - 50))
     }
-    
+
     func getCurrentValue() -> (String,Double)? {
         guard self.data.points.count > 0 else { return nil}
         let index = max(0,min(self.data.points.count-1,Int(floor((self.touchLocation*self.formSize.width)/(self.formSize.width/CGFloat(self.data.points.count))))))
