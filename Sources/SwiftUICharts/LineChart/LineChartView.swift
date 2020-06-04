@@ -54,7 +54,7 @@ public struct LineChartView: View {
         frame = CGSize(width: self.formSize.width, height: self.formSize.height/2)
         self.dropShadow = dropShadow!
         self.valueSpecifier = valueSpecifier!
-        self.rateValue = rateValue
+        self.rateValue = rateValue!
     }
 
     public var body: some View {
@@ -84,7 +84,7 @@ public struct LineChartView: View {
                                 }else{
                                     Image(systemName: "arrow.down")
                                 }
-                                Text("\(self.rateValue!)%")
+                                Text("\(self.rateValue)%")
                             }
                         }
                     }
