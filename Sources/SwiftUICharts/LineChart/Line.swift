@@ -44,7 +44,7 @@ public struct Line: View {
             if (min <= 0){
                 return (frame.size.height-padding) / CGFloat(max - min)
             }else{
-                return (frame.size.height-padding) / CGFloat(max - min)
+                return (frame.size.height-padding) / CGFloat(max + min)
             }
         }
         return 0

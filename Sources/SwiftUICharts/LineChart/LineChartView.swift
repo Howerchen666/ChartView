@@ -146,3 +146,13 @@ public struct LineChartView: View {
         return .zero
     }
 }
+
+struct WidgetView_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+
+            return LineChartView(data: ChartData(values: [("8/1", 8), ("15/1", 23), ("22/1", 54), ("29/1", 32), ("5/2", 12),  ("12/2", 37), ("19/2", 7), ("26/2", 23) ]), title: "Line chart", legend: "Basic")
+                .environment(\.colorScheme, .light)
+        }
+    }
+}
